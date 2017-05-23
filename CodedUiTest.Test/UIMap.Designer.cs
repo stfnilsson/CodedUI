@@ -27,7 +27,32 @@ namespace CodedUiTest.Test
     public partial class UIMap
     {
         
+        /// <summary>
+        /// CheckCreateEnable - Use 'CheckCreateEnableExpectedValues' to pass parameters into this method.
+        /// </summary>
+        public void CheckCreateEnable()
+        {
+            #region Variable Declarations
+            XamlButton uICREATEButton = this.UICodedUItestWindow1.UIPersonsListList.UICREATEButton;
+            #endregion
+
+            // Verify that the 'Enabled' property of 'CREATE' button equals 'True'
+            Assert.AreEqual(this.CheckCreateEnableExpectedValues.UICREATEButtonEnabled, uICREATEButton.Enabled, "Create enabled");
+        }
+        
         #region Properties
+        public virtual CheckCreateEnableExpectedValues CheckCreateEnableExpectedValues
+        {
+            get
+            {
+                if ((this.mCheckCreateEnableExpectedValues == null))
+                {
+                    this.mCheckCreateEnableExpectedValues = new CheckCreateEnableExpectedValues();
+                }
+                return this.mCheckCreateEnableExpectedValues;
+            }
+        }
+        
         public UIStartWindow UIStartWindow
         {
             get
@@ -66,11 +91,28 @@ namespace CodedUiTest.Test
         #endregion
         
         #region Fields
+        private CheckCreateEnableExpectedValues mCheckCreateEnableExpectedValues;
+        
         private UIStartWindow mUIStartWindow;
         
         private UICodedUItestWindow mUICodedUItestWindow;
         
         private UICodedUItestWindow1 mUICodedUItestWindow1;
+        #endregion
+    }
+    
+    /// <summary>
+    /// Parameters to be passed into 'CheckCreateEnable'
+    /// </summary>
+    [GeneratedCode("Coded UITest Builder", "15.0.26208.0")]
+    public class CheckCreateEnableExpectedValues
+    {
+        
+        #region Fields
+        /// <summary>
+        /// Verify that the 'Enabled' property of 'CREATE' button equals 'True'
+        /// </summary>
+        public bool UICREATEButtonEnabled = true;
         #endregion
     }
     

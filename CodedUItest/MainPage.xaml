@@ -52,12 +52,14 @@
             </ListView.ItemTemplate>
 
             <ListView.Footer>
-                <StackPanel Background="#FAFAFA" AutomationProperties.AutomationId="FooterInstance">
+                <StackPanel Height="120" Background="#FAFAFA" AutomationProperties.AutomationId="FooterInstance">
 
-                    <Button 
-                        x:Name="CreateButtonName"
+                    <Button  AutomationProperties.AccessKey="CTRL+Q"
+                      
+                        x:Name="CreateButtonName" Width="200"
                         Margin="24"
                         HorizontalAlignment="Right"
+                        AutomationProperties.Name="CreateButton"
                         AutomationProperties.AutomationId="CreateButton"
                         Click="ButtonBase_OnClick"
                         Content="CREATE"

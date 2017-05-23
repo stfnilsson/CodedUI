@@ -8,7 +8,8 @@ using Microsoft.VisualStudio.TestTools.UITesting.HtmlControls;
 using Microsoft.VisualStudio.TestTools.UITesting.DirectUIControls;
 using Microsoft.VisualStudio.TestTools.UITesting.WindowsRuntimeControls;
 using Keyboard = Microsoft.VisualStudio.TestTools.UITesting.Keyboard;
-
+using System.Linq;
+using System.Diagnostics;
 
 namespace CodedUiTest.Test
 {
@@ -28,6 +29,7 @@ namespace CodedUiTest.Test
         {
             string appId = "44c5756c-9fed-4add-bca4-252fbdffa171_gecswmz8y675e!App";
 
+           
             var window = XamlWindow.Launch(appId);
             window.CloseOnPlaybackCleanup = false;
 
@@ -36,101 +38,101 @@ namespace CodedUiTest.Test
 
 
             ClickOnOrder(baseUiMap);
-         //   ClickOnreferencedItem(window, baseUiMap);
-            ClickOnitem(window, baseUiMap);
-            //ClickOnCreate(window, baseUiMap);
 
+            ClickOnReferencedListItem(baseUiMap);
 
+            ClickOnitem(baseUiMap);
+
+            ClickOnLastListItem(baseUiMap);
+
+            ClickOnCreate(window, baseUiMap);
         }
 
         private void ClickOnOrder(UIMap map)
         {
             AutomationHelper.TapOnButton(map.UICodedUItestWindow1.UIOrderButton);
-
         }
 
         private void ClickOnCreate(XamlWindow window, UIMap map)
         {
-           
-           // AutomationHelper.TapOnButton(map.UICodedUItestWindow1.UIPersonsListList.UICREATEButton);
+            var parent = UIMap.UICodedUItestWindow1.UIPersonsListList;
+            var l = parent as XamlList;
+
+            
+            var w = UIMap.UICodedUItestWindow1.BoundingRectangle;
+
+            
+       //     Mouse.Click(new Point(964, 915));
+            //Mouse.Click(new Point(988, 939));
+
+            //var l = parent as XamlList;
+
+            //int bottom = parent.BoundingRectangle.Bottom;
+            //int right = parent.BoundingRectangle.Right;
+
+
+            //Mouse.Location = new Point(right - 48, bottom -48);
+
+          
+            string automationId = "CreateButton";
+            var button = AutomationHelper.GetUiTestControl(parent.Container.TopParent, control =>
+            {
+                var b = control as UITestControl;
+                if (b == null)
+                {
+                    return false;
+                }
+                Debug.WriteLine(b.Name);
+
+                var x = b as XamlControl;
+                if (!x.AutomationId.Equals(automationId, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return false;
+                }
+                return true;
+            }) as XamlButton;
+
+            //Assert.IsNotNull(button);
+
+            //AutomationHelper.TapOnButton(button);
 
         }
 
-        private void ClickOnreferencedItem(XamlWindow window, UIMap map)
+        private void ClickOnReferencedListItem(UIMap map)
         {
             AutomationHelper.TapOnButton(map.UICodedUItestWindow1.UIPersonsListList.UICodedUItestPersonListItem2.UIPressButton);
 
         }
 
-        private XamlButton _buttonInList;
-        private void ClickOnitem(XamlWindow window, UIMap map)
+        private void ClickOnLastListItem(UIMap map)
+        {
+            var list = UIMap.UICodedUItestWindow1.UIPersonsListList;
+            var lastItem = list.Items.Last();
+
+            var button = AutomationHelper.GetUiTestControl(lastItem, control =>
+            {
+
+                var b = control as XamlButton;
+                if (b == null)
+                {
+                    return false;
+                }
+                return true;
+            }) as XamlButton;
+
+            Assert.IsNotNull(button);
+
+
+            AutomationHelper.TapOnButton(button);
+
+        }
+
+        private void ClickOnitem(UIMap map)
         {
             
-                //var list = new XamlList(window);
-                //list.SearchProperties[XamlControl.PropertyNames.AutomationId] = automationId;
-                //list.WindowTitles.Add(DefaultSettings.MainWindowName);
-
-                //return list;
-
             var list = UIMap.UICodedUItestWindow1.UIPersonsListList;
-            foreach (UITestControl item in list.Items)
-            {
-                var typedItem = item as UICodedUItestPersonListItem;
-                var buttpon = typedItem.UIPressButton;
-            
-               // AutomationHelper.TapOnButton(typedItem.UIPressButton);
-            }
-           
 
-            //var control = new XamlControl(window);
-            //control.SearchProperties.Add(XamlControl.PropertyNames.AutomationId,"Hello");
-            //control.WindowTitles.Add("CodedUItest");
-
-            //control.WaitForControlReady();
-        
-            //var x = control as XamlButton;
-
-           // x.EnsureClickable();
-
-            //UIPersonsListList listView = map.UICodedUItestWindow1.UIPersonsListList;
-            //listView.WaitForControlReady();
-
-            //listView.
-
-
-            //_buttonInList = new XamlButton(UIMap.UICodedUItestWindow1);
-            //_buttonInList.SearchProperties.Add(XamlWindow.PropertyNames.ControlType, "Button");
-            //_buttonInList.SearchProperties.Add(XamlWindow.PropertyNames.AutomationId,"Joakim");
-
-            //_buttonInList.WindowTitles.Add(window.Title);
-
-            //AutomationHelper.TapOnButton(_buttonInList);
-
-            //map.UICodedUItestWindow1.UIPersonsListList.SearchProperties.Add
-            //    (XamlWindow.PropertyNames.ControlType, "Button");
-
-            //map.UICodedUItestWindow1.UIPersonsListList.SearchProperties.Add(XamlWindow.PropertyNames.AutomationId,
-            //    "Joakim");
-
-
-            //map.UICodedUItestWindow1.UIPersonsListList.SearchProperties.Add
-            //    (XamlWindow.PropertyNames.ControlType, "Button");
-
-            //map.UICodedUItestWindow1.UIPersonsListList.SearchProperties.Add(XamlWindow.PropertyNames.AutomationId,
-            //    "Joakim");
-
-            //var listView = map.UICodedUItestWindow1.UIPersonsListList;
-            //listView.WaitForControlReady();
-            
-     
-            //var mUIYoupiButton1 = new XamlButton(this);
-            //#region Search Criteria
-            //mUIYoupiButton1.SearchProperties[XamlButton.PropertyNames.Name] = "Youpi !";
-            //mUIYoupiButton1.SearchProperties[XamlButton.PropertyNames.Instance] = "2";
-            //mUIYoupiButton1.WindowTitles.Add("MainWindow");
-            //#endregion
-
-            //return mUIYoupiButton1;
+            AutomationHelper.TapOnButtonWithAutomationId(list, "Joakim");
         }
 
         #region Additional test attributes

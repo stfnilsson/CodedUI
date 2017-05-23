@@ -47,6 +47,7 @@ namespace IKEA.SalesCoworker.CodedUI.Tests.Helpers
             }
             return list.Items.FirstOrDefault() as XamlListItem;
         }
+        
 
         public static XamlListItem GetItemInList(XamlList list,string text)
         {
@@ -68,6 +69,29 @@ namespace IKEA.SalesCoworker.CodedUI.Tests.Helpers
                 }
             }
             return list.Items.FirstOrDefault(i => ItemExistItemViaText(list,text)) as XamlListItem;
+        }
+
+        public static XamlControl GetControlInList(XamlList list, string text)
+        {
+            
+            if (!HasListItems(list))
+            {
+                return null;
+            }
+            foreach (var item in list.Items)
+            {
+                var listItem = item as XamlListItem;
+
+                if (listItem == null)
+                {
+                    continue;
+                }
+                if (ItemExistItemViaText(listItem, text))
+                {
+                    return listItem;
+                }
+            }
+            return list.Items.FirstOrDefault(i => ItemExistItemViaText(list, text)) as XamlListItem;
         }
 
         public static bool TapOnItemInList(XamlList list, XamlListItem listItem)
@@ -263,60 +287,76 @@ namespace IKEA.SalesCoworker.CodedUI.Tests.Helpers
             return null;
         }
 
-        public static UITestControl GetControlByAutomationId(string automationId, UITestControl parent)
-        {
-            foreach (var child in parent.GetChildren())
-            {
-                foreach (var subChild in child.GetChildren())
-                {
-                    var controlToSearchFor = new UITestControl(subChild)
-                    {
-                        TechnologyName = "UIA"
-                    };
+        //public static UITestControl GetControlByAutomationId(string automationId, UITestControl parent)
+        //{
+        //    foreach (var child in parent.GetChildren())
+        //    {
+        //        foreach (var subChild in child.GetChildren())
+        //        {
+        //            var controlToSearchFor = new UITestControl(subChild)
+        //            {
+        //                TechnologyName = "UIA"
+        //            };
 
 
-                    // controlToSearchFor.SearchProperties.Add("ControlType", "Text");
-                    controlToSearchFor.SearchProperties.Add("AutomationId", automationId);
-                    controlToSearchFor.SearchProperties.Add("FrameworkId", "XAML");
+        //            // controlToSearchFor.SearchProperties.Add("ControlType", "Text");
+        //            controlToSearchFor.SearchProperties.Add("AutomationId", automationId);
+        //            controlToSearchFor.SearchProperties.Add("FrameworkId", "XAML");
 
-                    var match = controlToSearchFor.Exists;
+        //            var match = controlToSearchFor.Exists;
 
-                    if (match)
-                    {
-                        return controlToSearchFor;
-                    }
-                }
-            }
+        //            if (match)
+        //            {
+        //                return controlToSearchFor;
+        //            }
+        //        }
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
+        //public static XamlControl GetControlByText(string searchFor, XamlList parent)
+        //{
+        //    var childItems = parent.Items;
 
-        public static XamlListItem GetListItemByText(string searchFor, XamlList parent, bool useRegex)
-        {
-            var childItems = parent.Items;
+        //    foreach (var item in childItems)
+        //    {
+        //        var currentItem = item as XamlListItem;
+        //        var control = GetControlFromItem(item, searchFor);
+        //        if(control == null)
+        //        {
+        //            continue;
+        //        }
+        //        return control;
+        //    }
+        //    return null;
+        //}
 
-            foreach (var item in childItems)
-            {
-                var currentItem = item as XamlListItem;
-                if (ItemExistItemViaText(item, searchFor))
-                {
-                    return currentItem;
-                }
-            }
-            return null;
-        }
+        //public static XamlListItem GetListItemByText(string searchFor, XamlList parent, bool useRegex)
+        //{
+        //    var childItems = parent.Items;
 
-        public static XamlListItem GetListGroupListItem(XamlList list, string groupName)
-        {
-            WaitForListToLoad(list);
+        //    foreach (var item in childItems)
+        //    {
+        //        var currentItem = item as XamlListItem;
+        //        if (ItemExistItemViaText(item, searchFor))
+        //        {
+        //            return currentItem;
+        //        }
+        //    }
+        //    return null;
+        //}
+
+        //public static XamlListItem GetListGroupListItem(XamlList list, string groupName)
+        //{
+        //    WaitForListToLoad(list);
      
-            if (!list.WaitForControlReady())
-            {
-                return null;
-            }
-            return GetListItemByText(groupName, list, false);
-        }
+        //    if (!list.WaitForControlReady())
+        //    {
+        //        return null;
+        //    }
+        //    return GetListItemByText(groupName, list, false);
+        //}
 
         public static bool IsMatch(string text, string pattern, bool useRegex)
         {
@@ -327,28 +367,66 @@ namespace IKEA.SalesCoworker.CodedUI.Tests.Helpers
             return string.Equals(text, pattern, StringComparison.CurrentCultureIgnoreCase) || text.ToLower().Contains(pattern.ToLower());
         }
 
-        public static bool ItemExistsByAutomationId(string automationId, string searchFor, UITestControl parentControl)
+       
+
+       public static bool TapOnButtonWithAutomationId(UITestControl parent, string automationId)
         {
-            var childControls = parentControl.GetChildren();
-            if (childControls == null || !childControls.Any())
+            var button = GetUiTestControl(parent, control =>
+            {
+                var b = control as XamlButton;
+                if (b == null)
+                {
+                    return false;
+                }
+                if (!b.AutomationId.Equals(automationId,StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return false;
+                }
+                return true;
+            }) as XamlButton;
+
+            if(button == null)
             {
                 return false;
             }
-            foreach (var childControl in childControls)
+
+            TapOnButton(button);
+            return true;
+        }
+
+        public static UITestControl GetUiTestControl(UITestControl control,
+             Func<UITestControl,bool> validation)
+        {
+            if(control == null)
             {
-                var textControl = GetControlByAutomationId(automationId, childControl) as XamlText;
-                if (textControl != null && textControl.DisplayText == searchFor)
+                return null;
+            }
+            bool result = validation(control);
+            if(result)
+            {
+                return control;
+            }
+            var childControls = control.GetChildren();
+            if(childControls == null)
+            {
+                return null;
+            }
+            if (childControls.Count > 0)
+            {
+                foreach (UITestControl childControl in childControls)
                 {
-                    return true;
-                }
-                if (ItemExistsByAutomationId(automationId, searchFor, childControl))
-                {
-                    return true;
+                    var resultFromLoop = GetUiTestControl(childControl, validation);
+                    if (resultFromLoop == null)
+                    {
+                        continue;
+                    }
+                    return resultFromLoop;
+
                 }
             }
-            return false;
-
+            return null;
         }
+
 
         public static bool ItemExistItemViaText(UITestControl parentControl,string searchFor)
         {

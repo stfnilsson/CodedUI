@@ -213,7 +213,7 @@ namespace CodedUItest
             // Task.Delay()
             Loaded = false;
 
-           // await Task.Delay(3000).ConfigureAwait(false);
+            await Task.Delay(200).ConfigureAwait(false);
 
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
